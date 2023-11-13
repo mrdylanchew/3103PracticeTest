@@ -1,0 +1,42 @@
+version: '3'
+services:
+  jenkins:
+    image: jenkins/jenkins:lts
+    ports:
+      - "8080:8080"
+    volumes:
+      - jenkins_home:/var/jenkins_home
+
+  nginx:
+    image: nginx:latest
+    ports:
+      - "80:80"
+
+  git:
+    image: alpine/git
+    volumes:
+      - ./your_code_directory:/code
+
+  sonarqube:
+    image: sonarqube:latest
+    ports:
+      - "9000:9000"
+    environment:
+      - SONARQUBE_JDBC_URL=jdbc:h2:tcp://sonarqube-db/sonar
+    networks:
+      - sonarnet
+
+  sonarqube-db:
+    image: sonarqube:latest
+    networks:
+      - sonarnet
+    volumes:
+      - sonarqube-db:/opt/sonarqube/data
+
+networks:
+  sonarnet:
+    driver: bridge
+
+volumes:
+  jenkins_home:
+  sonarqube-db:
