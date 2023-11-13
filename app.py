@@ -7,6 +7,20 @@ app = Flask(__name__)
 def home():
     return render_template('home.html')
 
+@app.route('/login')
+def login():
+    return render_template('login.html')
+
+@app.route('/welcome', methods=['GET', 'POST'])
+def welcome():
+    if request.method == 'POST':
+        entered_password = request.form.get('password', '')
+    else:
+        entered_password = request.args.get('password', '')
+    
+    # Pass the password to the template
+    return render_template('welcome.html', password=entered_password)
+
 @app.route('/result', methods=['POST'])
 def result():
     search_term = request.form['search_term']

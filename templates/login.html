@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login Page</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            text-align: center;
+            margin: 150px 0;
+        }
+        .login-container {
+            max-width: 300px;
+            margin: 0 auto;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        input {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 10px;
+            box-sizing: border-box;
+        }
+        button {
+            background-color: #4caf50;
+            color: #fff;
+            padding: 10px;
+            border: none;
+            border-radius: 3px;
+            cursor: pointer;
+            width: 100%;
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <h2>Login</h2>
+        <form id="loginForm">
+            <label for="password">Password:</label>
+            <input type="password" id="password" name="password" required>
+            <br>
+            <button type="button" onclick="verifyPassword()">Login</button>
+        </form>
+    </div>
+
+    <script>
+        async function verifyPassword() {
+            // Get the entered password
+            var enteredPassword = document.getElementById("password").value;
+
+            // Fetch the common password list from GitHub
+            var commonPasswords = await fetchCommonPasswords();
+            
+            // Check if the password meets the requirements
+            if (isPasswordValid(enteredPassword, commonPasswords)) {
+                // Password is valid, redirect to the welcome page
+                var welcomeUrl = "{{ url_for('welcome') }}?password=" + encodeURIComponent(enteredPassword);
+                window.location.href = welcomeUrl;
+            }
+            
+            else {
+                // Password does not meet the requirements, stay on the login page
+                alert("Password does not meet the requirements. Please try again.");
+            }
+        }
+
+        async function fetchCommonPasswords() {
+            try {
+                // Fetch the common passwords list from GitHub
+                var response = await fetch('https://raw.githubusercontent.com/danielmiessler/SecLists/master/Passwords/Common-Credentials/10-million-password-list-top-1000.txt');
+                var text = await response.text();
+                // Split the text into an array of passwords
+                return text.split('\n').map(password => password.trim().toLowerCase());
+            } catch (error) {
+                console.error('Error fetching common passwords:', error);
+                return [];
+            }
+        }
+
+        function isPasswordValid(password, commonPasswords) {
+            // Implement password validation logic based on requirements
+            // For example, check length, complexity, and against common passwords
+            var passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/; // Example: At least 8 characters, one letter, and one number
+
+            if (!passwordRegex.test(password)) {
+                return false;
+            }
+
+            // Check against common passwords list
+            if (commonPasswords.includes(password.toLowerCase())) {
+                return false;
+            }
+
+            return true;
+        }
+    </script>
+</body>
+</html>

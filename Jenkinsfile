@@ -1,12 +1,6 @@
 pipeline {
     agent any
 
-    environment {
-        // Define environment variables if needed
-        VIRTUAL_ENV = 'venv'
-        PATH = "${3103Practice}/${VIRTUAL_ENV}/bin:$PATH"
-    }
-
     stages {
         stage('Checkout') {
             steps {
@@ -25,6 +19,24 @@ pipeline {
                 sh 'pip install -r requirements.txt'
             }
         }
+
+        stage('Build Docker Image') {
+            steps {
+                script {
+                    dockerImage = docker.build("jenkins/jenkins:lts")
+                }
+            }
+        }
+
+        stage('Run Docker Container') {
+            steps {
+                script {
+                    dockerImage.run('-p 5000:5000 --')
+                }
+            }
+        }
+
+
 
         stage('Run Tests') {
             steps {
