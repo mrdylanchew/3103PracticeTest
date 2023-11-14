@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     environment {
-        DOCKER_REGISTRY = 'docker.io'
+        DOCKER_REGISTRY = 'docker.io'  // Replace with your Docker registry URL
         IMAGE_NAME = '3103practicetest-flask-app'
         IMAGE_TAG = 'latest'
     }
@@ -17,6 +17,7 @@ pipeline {
         stage('Build Docker Image') {
             steps {
                 script {
+                    // Building the Docker image
                     docker.withRegistry('https://${DOCKER_REGISTRY}', 'docker-credentials') {
                         def customImage = docker.build("${IMAGE_NAME}:${IMAGE_TAG}", '-f Dockerfile .')
                         customImage.push()
@@ -25,18 +26,11 @@ pipeline {
             }
         }
 
-        stage('Deploy') {
+        stage('Build') {
             steps {
                 script {
-                    // Add deployment steps here (e.g., deploy to a server, Kubernetes, etc.)
-                }
-            }
-        }
-
-        stage('Cleanup') {
-            steps {
-                script {
-                    docker.image("${IMAGE_NAME}:${IMAGE_TAG}").remove()
+                    echo 'Building the project...'
+                    // Add your build commands here
                 }
             }
         }
@@ -44,10 +38,10 @@ pipeline {
 
     post {
         success {
-            echo 'Deployment successful!'
+            echo 'Build and Docker image build successful!'
         }
         failure {
-            echo 'Deployment failed!'
+            echo 'Build or Docker image build failed!'
         }
     }
 }
