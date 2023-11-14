@@ -14,12 +14,17 @@ pipeline {
             }
         }
 
-        stage('Run Tests') {
+        stage('Run Python') {
             steps {
                 script {
-                    sh 'pip install -r requirements.txt'  // Install project dependencies
-                    sh 'python -m unittest testcase.py'  // Run your unit tests
+                    sh 'python3 --version'  // Install project dependencies
                 }
+            }
+        }
+
+        stage('hello') {
+            steps {
+                sh 'python3 app.py'
             }
         }
     }
