@@ -1,6 +1,12 @@
 pipeline {
     agent any
 
+    environment {
+        DOCKER_IMAGE_NAME = 'practice-docker-image'
+        DOCKER_IMAGE_TAG = 'latest'
+        CONTAINER_NAME = 'docker-container-name'
+    }
+
     stages {
         stage('Checkout') {
             steps {
@@ -10,24 +16,42 @@ pipeline {
 
         stage('Build Docker Image') {
             steps {
-                echo 'Build Docker Image for Python Flask'
-                sh 'docker build -t docker.io/3103practicetest-flask-app:latest .'
+                script {
+                    docker.build("${DOCKER_IMAGE_NAME}:${DOCKER_IMAGE_TAG}", '.')
+                }
             }
         }
 
-        stage('Push Docker Image') {
+        stage('Start Docker Container') {
             steps {
-                echo 'Pushing Docker Image to Registry'
-                sh 'docker push docker.io/3103practicetest-flask-app:latest'
+                script {
+                    docker.run("-d --name ${CONTAINER_NAME} ${DOCKER_IMAGE_NAME}:${DOCKER_IMAGE_TAG}")
+                }
+            }
+        }
+
+        stage('Run Tests') {
+            steps {
+                script {
+                    docker.exec("${CONTAINER_NAME}", 'python3 -m unittest testcase.py')
+                }
             }
         }
     }
 
     post {
         success {
-            echo 'End of Exeuction'
+            script {
+                docker.stop(CONTAINER_NAME)
+                docker.remove(CONTAINER_NAME)
+            }
+            echo 'End of Execution'
         }
         failure {
+            script {
+                docker.stop(CONTAINER_NAME)
+                docker.remove(CONTAINER_NAME)
+            }
             echo 'Failed'
         }
     }
