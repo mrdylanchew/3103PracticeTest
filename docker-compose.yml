@@ -29,11 +29,14 @@ services:
       - GIT_USER_EMAIL=2101110@sit.singaporetech.edu.sg
 
   jenkins:
-    image: jenkins/jenkins:lts
+    build:
+      context: .
+      dockerfile: Dockerfile-jenkins
     ports:
       - "8080:8080"
     volumes:
       - ./jenkins-data:/var/jenkins_home
+      - /var/run/docker.sock:/var/run/docker.sock
     networks:
       - frontend
 
