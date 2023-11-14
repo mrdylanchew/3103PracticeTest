@@ -1,5 +1,11 @@
 pipeline {
-    agent any
+    agent {
+        docker {
+            // Specify the Docker image that has both Jenkins and Docker installed
+            image 'jenkins/jenkins:latest'
+            args '-v /var/run/docker.sock:/var/run/docker.sock'
+        }
+    }
 
     environment {
         FLASK_APP_IMAGE_NAME = 'flask-app-1'
