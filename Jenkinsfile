@@ -14,23 +14,11 @@ pipeline {
             }
         }
 
-        stage('Build Docker Image') {
+        stage('Run Tests') {
             steps {
                 script {
-                    // Building the Docker image
-                    docker.withRegistry('https://${DOCKER_REGISTRY}', 'docker-credentials') {
-                        def customImage = docker.build("${IMAGE_NAME}:${IMAGE_TAG}", '-f Dockerfile .')
-                        customImage.push()
-                    }
-                }
-            }
-        }
-
-        stage('Build') {
-            steps {
-                script {
-                    echo 'Building the project...'
-                    // Add your build commands here
+                    sh 'pip install -r requirements.txt'  // Install project dependencies
+                    sh 'python -m unittest testcase.py'  // Run your unit tests
                 }
             }
         }

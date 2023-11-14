@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, url_for
+from flask import Flask, render_template, request
 import bleach
 
 app = Flask(__name__)
@@ -13,10 +13,7 @@ def login():
 
 @app.route('/welcome', methods=['GET', 'POST'])
 def welcome():
-    if request.method == 'POST':
-        entered_password = request.form.get('password', '')
-    else:
-        entered_password = request.args.get('password', '')
+    entered_password = request.form.get('password', '')
     
     # Pass the password to the template
     return render_template('welcome.html', password=entered_password)

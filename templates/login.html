@@ -39,13 +39,16 @@
 <body>
     <div class="login-container">
         <h2>Login</h2>
-        <form id="loginForm">
+        <form id="loginForm" action="/welcome" method="post">
             <label for="password">Password:</label>
-            <input type="password" id="password" name="password" required>
+            <input type="password" id="password" name="password" pattern="^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d!@#]{8,}$" title="Password must be at least 8 characters long and contain at least one letter, one number, and special characters !@#" required>
+            <span class="password-hint">Hint: Password must be at least 8 characters long and contain at least one letter and one number</span>
             <br>
-            <button type="button" onclick="verifyPassword()">Login</button>
+            <button type="submit" onclick="verifyPassword()">Login</button>
         </form>
     </div>
+    
+    
 
     <script>
         async function verifyPassword() {
@@ -58,8 +61,8 @@
             // Check if the password meets the requirements
             if (isPasswordValid(enteredPassword, commonPasswords)) {
                 // Password is valid, redirect to the welcome page
-                var welcomeUrl = "{{ url_for('welcome') }}?password=" + encodeURIComponent(enteredPassword);
-                window.location.href = welcomeUrl;
+                sessionStorage.setItem("enteredPassword", enteredPassword);
+                window.location.href = "{{ url_for('welcome') }}";
             }
             
             else {
@@ -84,19 +87,17 @@
         function isPasswordValid(password, commonPasswords) {
             // Implement password validation logic based on requirements
             // For example, check length, complexity, and against common passwords
-            var passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/; // Example: At least 8 characters, one letter, and one number
-
-            if (!passwordRegex.test(password)) {
-                return false;
-            }
+            var passwordRegex = /^(?=.*[A-Za-z])(?=.*\d).{8,}$/;
 
             // Check against common passwords list
             if (commonPasswords.includes(password.toLowerCase())) {
                 return false;
             }
 
-            return true;
+            // Check against password complexity requirements
+            return passwordRegex.test(password);
         }
+
     </script>
 </body>
 </html>
