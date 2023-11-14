@@ -1,42 +1,44 @@
 version: '3'
+
 services:
+  flask-app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "5000:5000"
+    environment:
+      - GIT_USER_NAME=Dylan Chew
+      - GIT_USER_EMAIL=2101110@sit.singaporetech.edu.sg
+
+  nginx:
+    build: .
+    ports:
+      - "80:80"
+    depends_on:
+      - flask-app
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/conf.d/default.conf
+
+  git-config:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment:
+      - GIT_USER_NAME=Dylan Chew
+      - GIT_USER_EMAIL=2101110@sit.singaporetech.edu.sg
+
   jenkins:
     image: jenkins/jenkins:lts
     ports:
       - "8080:8080"
     volumes:
-      - jenkins_home:/var/jenkins_home
-
-  nginx:
-    image: nginx:latest
-    ports:
-      - "80:80"
-
-  git:
-    image: alpine/git
-    volumes:
-      - ./your_code_directory:/code
-
-  sonarqube:
-    image: sonarqube:latest
-    ports:
-      - "9000:9000"
-    environment:
-      - SONARQUBE_JDBC_URL=jdbc:h2:tcp://sonarqube-db/sonar
+      - ./jenkins-data:/var/jenkins_home
     networks:
-      - sonarnet
-
-  sonarqube-db:
-    image: sonarqube:latest
-    networks:
-      - sonarnet
-    volumes:
-      - sonarqube-db:/opt/sonarqube/data
+      - frontend
 
 networks:
-  sonarnet:
-    driver: bridge
+  frontend:
 
 volumes:
-  jenkins_home:
-  sonarqube-db:
+  jenkins-data:

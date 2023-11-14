@@ -1,0 +1,38 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Virtual environment
+venv/
+
+# Flask migration folder
+/migrations/
+
+# Docker
+docker-compose.yml
+
+# Jenkins
+jenkins-data/
+
+# IDE files
+.idea/
+
+# Editor-specific files
+.vscode/
+
+# Log files
+*.log
+
+# Environment variables file
+.env
+
+# Compiled Python files
+*.pyc
+
+# macOS
+.DS_Store
+
+# Windows
+Thumbs.db
