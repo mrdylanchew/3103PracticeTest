@@ -1,26 +1,27 @@
-# Use the official Jenkins LTS image as the base image
 FROM jenkins/jenkins:lts
 
-# Switch to root user to install packages
+# Switch to root to install packages
 USER root
 
-# Install prerequisites
-RUN apt-get update && \
-    apt-get install -y \
-        apt-transport-https \
-        ca-certificates \
-        curl \
-        gnupg \
-        lsb-release
+# Install necessary packages
+RUN apt-get update && apt-get install -y apt-transport-https \
+   ca-certificates curl gnupg2 \
+   software-properties-common
 
-# Add Docker GPG key and repository
-RUN curl -fsSL https://download.docker.com/linux/debian/gpg | gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg --keyserver keyserver.ubuntu.com
+# Add Docker's official GPG key
+RUN curl -fsSL https://download.docker.com/linux/debian/gpg | apt-key add -
 
-RUN echo "deb [signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/debian $(lsb_release -cs) stable" > /etc/apt/sources.list.d/docker.list
+# Add Docker repository
+RUN add-apt-repository \
+   "deb [arch=amd64] https://download.docker.com/linux/debian \
+   $(lsb_release -cs) stable"
 
-# Install Docker
-RUN apt-get update && \
-    apt-get install -y docker-ce docker-ce-cli containerd.io
+# Install Docker CLI
+RUN apt-get update && apt-get install -y docker-ce-cli
 
-# Switch back to the Jenkins user
-USER jenkins
+# Install Git
+RUN apt-get install -y git
+
+# Create the docker group and add the jenkins user to it
+RUN groupadd docker 
+RUN usermod -aG docker jenkins
