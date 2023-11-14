@@ -1,12 +1,6 @@
 pipeline {
     agent any
 
-    environment {
-        DOCKER_REGISTRY = 'docker.io'  // Replace with your Docker registry URL
-        IMAGE_NAME = '3103practicetest-flask-app'
-        IMAGE_TAG = 'latest'
-    }
-
     stages {
         stage('Checkout') {
             steps {
@@ -14,27 +8,27 @@ pipeline {
             }
         }
 
-        stage('Run Python') {
+        stage('Build Docker Image') {
             steps {
-                script {
-                    sh 'python3 --version'  // Install project dependencies
-                }
+                echo 'Build Docker Image for Python Flask'
+                sh 'docker build -t docker.io/3103practicetest-flask-app:latest .'
             }
         }
 
-        stage('hello') {
+        stage('Push Docker Image') {
             steps {
-                sh 'python3 app.py'
+                echo 'Pushing Docker Image to Registry'
+                sh 'docker push docker.io/3103practicetest-flask-app:latest'
             }
         }
     }
 
     post {
         success {
-            echo 'Build and Docker image build successful!'
+            echo 'End of Exeuction'
         }
         failure {
-            echo 'Build or Docker image build failed!'
+            echo 'Failed'
         }
     }
 }
